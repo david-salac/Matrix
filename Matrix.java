@@ -31,7 +31,6 @@ public class Matrix {
     private int columnNumber;
     private int rowNumber;
     private final double DELTA_FOR_COMPARE;
-    private int rank;
     
     private static String doubleToString(double number, int precision) {
         String start = Double.toString(number);
@@ -931,6 +930,7 @@ public class Matrix {
         sortWithMirror(weights, temp1);
         boolean nonZeroExists = false;
         for (int i = 0; i < weights.length; i ++) {
+            System.out.println("XXX: " + weights[i]);
             if (weights[i] >= columnNumber) {
                 return i;
             }
@@ -941,7 +941,44 @@ public class Matrix {
         if (!nonZeroExists) {
             return 0;
         }
+        if(rowNumber < columnNumber) {
+            return weights[weights.length - 1] + 1;
+        }
         return columnNumber;
+    }
+    
+    /**
+     * Get the null space (kernel of matrix linear projection) of the matrix
+     * @return Null space of the matrix
+     */
+    public Matrix nullSpace() {
+        int matrixRank = rank();
+        Matrix nullspace = generateZeroMatrix(columnNumber - matrixRank, columnNumber);
+        
+        Matrix extendedMatrix = generateZeroMatrix(columnNumber, columnNumber);
+        Matrix reduced = deepCopy();
+        reduced.pivotMatrixInplace();
+        int [] weights = reduced.getRowsWeight();
+        int [] indices = new int[weights.length];
+        for (int i = 0; i < rowNumber; i++) {
+            indices[i] = i;
+        }
+        
+        sortWithMirror(weights, indices);
+        for (int i = 0; i < weights.length; i++) {
+            extendedMatrix.setRow(weights[i], reduced.chooseRow(indices[i]));
+        }
+        extendedMatrix.multiplyByConstantInplace(-1.0);
+        int nullIdx = 0;
+        for (int diag = 0; diag < extendedMatrix.rowNumber; diag++) {
+            if (deltaDoubleCompare(extendedMatrix.getElement(diag, diag), 0, DELTA_FOR_COMPARE)) {
+                nullspace.setColumn(nullIdx, extendedMatrix.chooseColumn(diag));
+                nullspace.setElement(nullIdx, diag, 1);
+                nullIdx++;
+            }
+        }
+        
+        return nullspace;
     }
     
     public Matrix parseMatlabString(String input) {
@@ -951,9 +988,7 @@ public class Matrix {
         throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
     
-    public Matrix nullSpace() {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
+    
     public double [] eigenvalues() {
         throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
