@@ -22,8 +22,6 @@ SOFTWARE.
 
 package eu.davidsalac.matrix;
 
-import java.text.DecimalFormat;
-
 /**
  * The class for dealing with fundamental matrix operation for matrices in R(n,m)
  * @author David Salac
@@ -34,6 +32,27 @@ public class Matrix {
     private int rowNumber;
     private final double DELTA_FOR_COMPARE;
     private int rank;
+    
+    private static String doubleToString(double number, int precision) {
+        String start = Double.toString(number);
+        String result = "";
+        for (int i = 0; i < start.length(); i++) {
+            if (start.charAt(i) == '.' || start.charAt(i) == ',') {
+                result += start.charAt(i);
+                for (int j = i + 1; j < precision + i + 1; j++) {
+                    if (j < start.length()) {
+                        result += start.charAt(j);
+                    }
+                    else {
+                        result += '0';
+                    }
+                }
+                break;
+            }
+            result += start.charAt(i);
+        }
+        return result;
+    }
     
     /**
      * Sorting an array and swapping the mirror array in a same manner as an source array.
@@ -733,15 +752,15 @@ public class Matrix {
     
     /**
      * Convert the matrix to the WolframAlpha compatible format
+     * @param decimalPlacePrecision The rounding of decimal place to given position
      * @return WolframAlpha string representation of the matrix.
      */
-    public String toWolframAlphaString() {
+    public String toWolframAlphaString(int decimalPlacePrecision) {
         String temp = "{";
         for (int row = 0; row < rowNumber; row ++) {
             temp += "{";
             for (int col = 0; col < columnNumber; col++) {
-                DecimalFormat formatTo2DecDigit = new DecimalFormat(".####"); //for being able to format your output to 2 decimal places
-                temp += (formatTo2DecDigit.format(getElement(col, row)));
+                temp += doubleToString(getElement(col, row), decimalPlacePrecision);
                 if (col != columnNumber - 1) {
                     temp += ", ";
                 }
@@ -753,6 +772,14 @@ public class Matrix {
         }
         temp += "}";
         return temp;
+    }
+    
+    /**
+     * Convert the matrix to the WolframAlpha compatible format
+     * @return WolframAlpha string representation of the matrix.
+     */
+    public String toWolframAlphaString() {
+        return toWolframAlphaString(4);
     }
     
     /**
