@@ -493,10 +493,10 @@ public class Matrix {
                 indicesOfRows[idx] = idx;
             }
             sortWithMirror(rowsWeights, indicesOfRows);
-            for (int kk = 0; kk < rowsWeights.length; kk++) {
+            /*for (int kk = 0; kk < rowsWeights.length; kk++) {
                 System.out.print(rowsWeights[kk] + ", ");
             }
-            System.out.println(" ");
+            System.out.println(" ");*/
             int row = indicesOfRows[i];
             int rowWeight = rowsWeights[i];
             
@@ -588,7 +588,7 @@ public class Matrix {
         sortWithMirror(rowWeights, rowIndices);
         Matrix inverseFind = generateZeroMatrix(columnNumber, rowNumber);
         for (int row = 0; row < rowNumber; row++) {
-            System.out.println();
+            /*System.out.println();*/
             inverseFind.setRow(row, inverse.chooseRow(rowIndices[row]));
         }
         return inverseFind;
@@ -820,7 +820,29 @@ public class Matrix {
     public double determinant() {
         throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
-    public double rank() {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    
+    /**
+     * Compute the rank of the matrix (number of linearly independent rows)
+     * @return the rank of current matrix
+     */
+    public int rank() {
+        Matrix temp = pivotMatrix();
+        
+        int [] weights = temp.getRowsWeight();
+        int [] temp1 = new int[weights.length];
+        sortWithMirror(weights, temp1);
+        boolean nonZeroExists = false;
+        for (int i = 0; i < weights.length; i ++) {
+            if (weights[i] >= columnNumber) {
+                return i;
+            }
+            if (weights[i] != 0) {
+                nonZeroExists = true;
+            }
+        }
+        if (!nonZeroExists) {
+            return 0;
+        }
+        return columnNumber;
     }
 }
