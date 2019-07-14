@@ -807,17 +807,6 @@ public class Matrix {
         return values;
     }
     
-    public Matrix parseMatlabString(String input) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
-    public Matrix parseWolframString(String input) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
-    
-    public Matrix nullSpace() {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
-    
     /**
      * Find the upper triangular form of the matrix (usable not only for determinant computation)
      */
@@ -926,5 +915,25 @@ public class Matrix {
             return 0;
         }
         return columnNumber;
+    }
+    
+    public Matrix parseMatlabString(String input) {
+        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    }
+    public Matrix parseWolframString(String input) {
+        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public Matrix nullSpace() {
+        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    }
+    public double [] eigenvalues() {
+        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    }
+    public Matrix [] eigenvectors() {
+        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    }
+    public void rotateInplace(double angleInRadians) {
+        throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
 }
