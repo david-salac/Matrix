@@ -40,7 +40,7 @@ public class Matrix {
      * @param arr the input array to be sorted.
      * @param mirror the mirror array which elements are swapped same as an input array.
      */
-    public static void sortWithMirror(int arr[], int mirror[]) 
+    private static void sortWithMirror(int arr[], int mirror[]) 
     { 
         int n = arr.length; 
   
@@ -817,8 +817,90 @@ public class Matrix {
     public Matrix nullSpace() {
         throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
+    
+    /**
+     * Find the upper triangular form of the matrix (usable not only for determinant computation)
+     */
+    public void getUpperTriangularInplace() {
+        // Follow the logic of the reduced Gaussian Elimination with swapping
+        
+        for (int i = 0; i < rowNumber; i++) {
+            int [] rowsWeights = getRowsWeight();
+            int [] indicesOfRows = new int[rowNumber];
+            for (int idx = 0; idx < rowNumber; idx++) {
+                indicesOfRows[idx] = idx;
+            }
+            sortWithMirror(rowsWeights, indicesOfRows);
+            swapRows(i, indicesOfRows[i]);
+            /*for (int kk = 0; kk < rowsWeights.length; kk++) {
+                System.out.print(rowsWeights[kk] + ", ");
+            }
+            System.out.println(" ");*/
+            int row = i;
+            int rowWeight = rowsWeights[i];
+            
+            if (rowWeight >= columnNumber) {
+                break;
+            }
+            double valueOnPivot = getElement(rowWeight, row);
+            double inverse = 1.0/valueOnPivot;
+            //multiplyRowByValueInplace(row, inverse);
+            //setElement(rowWeight, row, 1.0);
+            
+            // Subtract row value from each other row
+            for (int j = rowWeight + 1; j < rowNumber; j++) {
+                double mulFactor = -1.0 * getElement(rowWeight, j) * inverse;
+                addMultiplicationOfRowToAnotherRowInplace(row, j, mulFactor);
+                // For reducing of rounding error set directly to zero:
+                if (j != row) {
+                    setElement(rowWeight, j, 0.0);
+                } else {
+                    setElement(rowWeight, j, 1.0);
+                }
+            }
+        }
+        
+    }
+    
+    /**
+     * Find the upper triangular form of the matrix (usable not only for determinant computation)
+     * @return The upper triangular form of the matrix
+     */
+    public Matrix getUpperTriangular() {
+        Matrix temp = deepCopy();
+        temp.getUpperTriangularInplace();
+        return temp;
+    }
+    
+    /**
+     * Compute the trace of the matrix (sum of all elements on diagonal)
+     * @return The trace of the matrix
+     */
+    public double trace() {
+        if (rowNumber != columnNumber) {
+            throw new IllegalArgumentException("The matrix must be rectangular!");
+        }
+        double trace = 0;
+        for (int i = 0; i < rowNumber; i++) {
+            trace += getElement(i, i);
+        }
+        return trace;
+    }
+    
+    /**
+     * Compute the determinant of the matrix
+     * @return The value of the determinant.
+     */
     public double determinant() {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+        if (rowNumber != columnNumber) {
+            return 0;
+        }
+        Matrix detTemp = getUpperTriangular();
+        double determinant = 1;
+        for (int i =0; i < columnNumber; i ++) {
+            determinant *= detTemp.getElement(i, i);
+        }
+        return determinant;
     }
     
     /**
