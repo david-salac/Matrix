@@ -1,5 +1,7 @@
 # Class encapsulating simple real matrices and fundamental matrix operations
-This is the basic implementation of the fundamental matrix operation. 
+This is the basic implementation of the fundamental matrix operations.
+
+Available in Java in OpenJDK compatible and in C# in Mono compatible format.
 
 # Overview of available operations (with examples)
 The overall logic is that indices of rows or columns are *indexed from zero* (0). 

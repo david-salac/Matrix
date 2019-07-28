@@ -988,7 +988,6 @@ public class Matrix {
         sortWithMirror(weights, temp1);
         boolean nonZeroExists = false;
         for (int i = 0; i < weights.length; i ++) {
-            System.out.println("XXX: " + weights[i]);
             if (weights[i] >= columnNumber) {
                 return i;
             }
