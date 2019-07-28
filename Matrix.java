@@ -604,15 +604,22 @@ public class Matrix {
     
     /**
      * Transposition of the matrix
+     */
+    public void transposeInplace() {
+        for (int row = 0; row < rowNumber; row++) {
+            for (int col = 0; col < columnNumber; col++) {
+                setElement(row, col, getElement(col, row));
+            }
+        }
+    }
+    
+    /**
+     * Transposition of the matrix
      * @return Transposed matrix
      */
     public Matrix transpose() {
-        Matrix temp = generateZeroMatrix(rowNumber, columnNumber);
-        for (int row = 0; row < rowNumber; row++) {
-            for (int col = 0; col < columnNumber; col++) {
-                temp.setElement(row, col, getElement(col, row));
-            }
-        }
+        Matrix temp = deepCopy();
+        temp.transposeInplace();
         return temp;
     }
     
@@ -1080,9 +1087,7 @@ public class Matrix {
      * @param scalar Given constant
      */
     public void multiplyScalarToEachElementInplace(double scalar) {
-        for (int i = 0; i < matrix.length; ++i) {
-            matrix[i] = matrix[i] * scalar;
-        }
+        multiplyByConstantInplace(scalar);
     }
     
     /**
@@ -1091,9 +1096,7 @@ public class Matrix {
      * @return New matrix after operation.
      */
     public Matrix multiplyScalarToEachElement(double scalar) {
-        Matrix temp = deepCopy();
-        temp.multiplyScalarToEachElementInplace(scalar);
-        return temp;
+        return multiplyByConstant(scalar);
     }
     
     /**
@@ -1267,12 +1270,111 @@ public class Matrix {
         return average;
     }
     
-    
-    public Matrix parseMatlabString(String input) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    /**
+     * Parse the input string to the matrix values.
+     * @param input Input string.
+     * @param opening The opening character (typically [ or {).
+     * @param closing The closing character (typically ] or }).
+     * @param separator The separator between two values (typically ,).
+     * @return The parsed matrix.
+     * @throws IllegalArgumentException If the string is impaired.
+     */
+    private static Matrix parsingString(String input, char opening, char closing, char separator) throws IllegalArgumentException {
+        int rowsCount = 0;
+        int columnCounts = 0;
+        int elementCounts = 0;
+        boolean openedLevel0 = false;
+        boolean openedLevel1 = false;
+        
+        for (int i = 0; i < input.length(); i++) {
+            if(input.charAt(i) == opening) {
+                if (!openedLevel0) { 
+                    openedLevel0 = true; 
+                }
+                else if (!openedLevel1) { 
+                    rowsCount++;
+                    openedLevel1 = true; 
+                }
+                else {
+                    throw new IllegalArgumentException("Wrong input string!");
+                }
+            }
+            if (openedLevel1 && input.charAt(i) == separator) {
+                elementCounts ++;
+            }
+            if(input.charAt(i) == closing) {
+                if (openedLevel1) { 
+                    openedLevel1 = false; 
+                    elementCounts++;
+                }
+                else if (openedLevel0) { 
+                    openedLevel0 = false; 
+                }
+                else {
+                    throw new IllegalArgumentException("Wrong input string!");
+                }
+            }
+        }
+        columnCounts = elementCounts / rowsCount;
+        
+        Matrix result = generateZeroMatrix(columnCounts, rowsCount);
+        int elementPosition = 0;
+        String value = "";
+        for (int i = 0; i < input.length(); i++) {
+            if(input.charAt(i) == opening) {
+                if (!openedLevel0) { 
+                    openedLevel0 = true; 
+                }
+                else if (!openedLevel1) { 
+                    openedLevel1 = true; 
+                }
+            }
+            if (openedLevel1 && input.charAt(i) == separator) {
+                // PARSE
+                double valueInt = Double.parseDouble(value);
+                result.setElement(elementPosition % columnCounts, elementPosition / columnCounts, valueInt);
+                elementPosition ++;
+                value = "";
+            }
+            else if (openedLevel1 && Character.isDigit(input.charAt(i)) || input.charAt(i) == '.') {
+                value += input.charAt(i);
+            }
+            if(input.charAt(i) == closing) {
+                if (openedLevel1) { 
+                    openedLevel1 = false; 
+                    // PARSE
+                    double valueInt = Double.parseDouble(value);
+                    result.setElement(elementPosition % columnCounts, elementPosition / columnCounts, valueInt);
+                    elementPosition++;
+                    value = "";
+                }
+                else if (openedLevel0) { 
+                    openedLevel0 = false; 
+                }
+            }
+        }
+        
+        return result;
     }
-    public Matrix parseWolframString(String input) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
+    
+    /**
+     * Parse the Matlab (Python) compatible string
+     * @param input The input string
+     * @return Parsed Matrix
+     * @throws IllegalArgumentException If there is an error in the string.
+     */
+    public static Matrix parseMatlabString(String input) throws IllegalArgumentException {
+        return parsingString(input, '[', ']', ',');
+    }
+    
+    /**
+     * Parse the WolframAlpha compatible string
+     * @param input The input string
+     * @return Parsed Matrix
+     * @throws IllegalArgumentException If there is an error in the string.
+     */
+    public static Matrix parseWolframString(String input) throws IllegalArgumentException {
+        return parsingString(input, '{', '}', ',');
     }
     
 }
