@@ -1,5 +1,7 @@
 /*
-Copyright (c) 2019 David Salac.
+MIT License
+
+Copyright (c) 2019 David Salac
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +29,21 @@ package eu.davidsalac.matrix;
  * @author David Salac
  */
 public class Matrix {
+    // Representation of the matrix as 1D array (indexing logic: get(row, col) = matrix[colNumber * row + col])
     private double [] matrix;
+    // The number of columns in the matrix
     private int columnNumber;
+    // The number of rows in the matrix
     private int rowNumber;
+    // The delat for comparison of integer for the logic: compare(a,b) = absolute_value(a - b) < DELTA
     private final double DELTA_FOR_COMPARE;
     
+    /**
+     * Convert the double value to string with given number of decimal places.
+     * @param number input number.
+     * @param precision the precision (defined number of decimal places).
+     * @return The string with rounded double value.
+     */
     private static String doubleToString(double number, int precision) {
         String start = Double.toString(number);
         String result = "";
@@ -122,7 +134,7 @@ public class Matrix {
     }
     
     /**
-     * Create an instance with defined delta for comparison of doubles
+     * Create an instance with defined delta for comparison of doubles.
      */
     private Matrix () {
         // Compare doubles in given delta;
@@ -135,11 +147,11 @@ public class Matrix {
      * @param rowNumber  The required number of rows in the matrix
      */
     private Matrix (int columnNumber, int rowNumber) {
+        // For comparison of doubles in given delta
+        this();
         this.matrix = new double[columnNumber * rowNumber];
         this.columnNumber = columnNumber;
         this.rowNumber = rowNumber;
-        // For comparison of doubles in given delta
-        DELTA_FOR_COMPARE = 0.0001;
     }
     
     /**
@@ -159,7 +171,7 @@ public class Matrix {
     }
     
     /**
-     * Set the element value
+     * Set the element at given position.
      * @param column the column position of the element
      * @param row the row position of the element
      * @param value the new value for the element
@@ -175,7 +187,7 @@ public class Matrix {
     }
     
     /**
-     * Set the row for the new values given by array of delta values
+     * Set the row for the new values given by array of double values.
      * @param row The row where an array is inserted
      * @param values The values for the row
      * @throws IndexOutOfBoundsException in the case that row index is out of bound
@@ -194,7 +206,7 @@ public class Matrix {
     }
     
     /**
-     * Set the row using row vector represented as Matrix class instance
+     * Set the row using row vector represented as Matrix class instance.
      * @param row the row where the new values are inserted.
      * @param values the vector of values.
      * @throws IndexOutOfBoundsException in the case that row index is out of bound
@@ -213,7 +225,7 @@ public class Matrix {
     }
     
     /**
-     * Set the column of values to the matrix
+     * Set the values of given column with input double values.
      * @param column The position of the column which will be rewritten.
      * @param values The new values that are inserted to the matrix
      * @throws IndexOutOfBoundsException in the case that column index is out of bound
@@ -232,7 +244,7 @@ public class Matrix {
     }
     
     /**
-     * Set the values in given column to the new input values represented by Matrix vector
+     * Set the values of given column with input double values represented by instance of the Matrix class.
      * @param column The position of the column which will be rewritten
      * @param values The new values
      * @throws IndexOutOfBoundsException in the case that column index is out of bound
@@ -269,7 +281,7 @@ public class Matrix {
     }
     
     /**
-     * Generate a new matrix with integer values.
+     * Generate a new matrix with integer values in given range.
      * @param columnNumber Number of columns in the new matrix
      * @param rowNumber Number of rows in the new matrix
      * @param valuesFrom The lower bound for values
@@ -314,7 +326,22 @@ public class Matrix {
     }
     
     /**
-     * Swap the rows in the matrix without creating a new one
+     * Generate the matrix that has element equal to given constant everywhere.
+     * @param columnNumber The number of columns in a matrix.
+     * @param rowNumber The number of rows in a matrix.
+     * @param scalar The number that will be everywhere in the matrix.
+     * @return New matrix with given size.
+     */
+    public static Matrix generateConstantMatrix(int columnNumber, int rowNumber, double scalar) {
+        Matrix tempMatrix = generateZeroMatrix(columnNumber, rowNumber);
+        for (int i = 0; i < tempMatrix.matrix.length; ++i) {
+            tempMatrix.matrix[i] = scalar;
+        }
+        return tempMatrix;
+    }
+    
+    /**
+     * Swap the rows in the matrix without creating a new Matrix.
      * @param rowA The position of the first row.
      * @param rowB The position of another row.
      */
@@ -333,7 +360,7 @@ public class Matrix {
     }
     
     /**
-     * Swap the rows in the matrix together with creating a new one
+     * Swap the rows in the matrix together with creating a new Matrix for a result.
      * @param rowA The position of the first row.
      * @param rowB The position of another row.
      * @return The new matrix with swapped rows.
@@ -345,7 +372,7 @@ public class Matrix {
     }
     
     /**
-     * Swap the columns in the matrix without creating a new one
+     * Swap the columns in the matrix without creating a new Matrix.
      * @param columnA The position of the first column.
      * @param columnB The position of another column.
      */
@@ -364,7 +391,7 @@ public class Matrix {
     }
     
     /**
-     * Swap the columns in the matrix together with creating a new one
+     * Swap the columns in the matrix together with creating a new Matrix for a result.
      * @param columnA The position of the first column.
      * @param columnB The position of another column.
      * @return The new matrix with swapped column.
@@ -376,23 +403,25 @@ public class Matrix {
     }
     
     /**
-     * Compare two double values with respect to given delta values
+     * Compare two double values with respect to given delta values.
      * @param A First double value
      * @param B Another double value
      * @param delta The delta parameters for comparison
      * @return abs(A-B) < delta
      */
     public static boolean deltaDoubleCompare(double A, double B, double delta) {
+        // Usable because of weakness of IEEE double implementation
         return Math.abs(A - B) < delta;
     }
     
     /**
      * Get the weight of the row (the column position of the first non-zero element in row)
      * @param row Probed row
-     * @return The position of the first non-zero element in the row or the number of rows if none such element exists.
+     * @return The position (from left) of the first non-zero element in the row or the number of rows if none such element exists.
      */
     public int getRowWeight(int row) {
         // Find the position (from left) of the first non-zero element in the matrix, return 0 if it does not exists.
+        // Usable for implementation of Gauss Elimination
         for (int col = 0; col < columnNumber; col ++) {
             if (!deltaDoubleCompare(0, getElement(col, row), DELTA_FOR_COMPARE)) {
                 return col;
@@ -548,7 +577,7 @@ public class Matrix {
     }
     
     /**
-     * Compute the pivotal representation of the matrix without swapping rows
+     * Compute the pivotal representation of the matrix without swapping rows.
      */
     public void pivotMatrixInplace() {
         pivotMatrixInplace(null);
@@ -589,7 +618,7 @@ public class Matrix {
     
     /**
      * Compute the inversion of the matrix if exists
-     * @return Inverse matrix to current matrix
+     * @return Inverse matrix to current matrix.
      */
     public Matrix getInverseMatrix() {
         if (rowNumber != columnNumber) {
@@ -613,7 +642,7 @@ public class Matrix {
     }
     
     /**
-     * Compute the multiplication of the current matrix with inserted matrix
+     * Compute the multiplication of the current matrix with given matrix in the argument.
      * @param multiplier Another matrix
      * @return current matrix multiplied by given matrix in the argument.
      */
@@ -642,7 +671,7 @@ public class Matrix {
     }
     
     /**
-     * Multiply all element in given row by value
+     * Multiply all element in given row by value.
      * @param row Index of the row
      * @param value The multiplication constant
      */
@@ -667,21 +696,45 @@ public class Matrix {
     }
     
     /**
-     * Add the values of another matrix to this matrix
+     * Add the values of another matrix to this matrix.
      * @param adder The matrix to be added
-     * @return Result after adding two matrices
      */
-    public Matrix add(Matrix adder) {
+    public void addInplace(Matrix adder) {
         if (columnNumber != adder.getColumnCount() || rowNumber != adder.getRowCount()) {
             throw new IllegalArgumentException("The dimension of input matrices does not match!");
         }
-        Matrix temp = this.deepCopy();
         for (int row = 0; row < rowNumber; row++) {
             for (int col = 0; col < columnNumber; col++) {
-                temp.setElement(col, row, this.getElement(col, row) + adder.getElement(col, row));
+                setElement(col, row, this.getElement(col, row) + adder.getElement(col, row));
             }
         }
+    }
+    
+    /**
+     * Add the values of another matrix to this matrix.
+     * @param adder The matrix to be added
+     * @return New matrix after operation.
+     */
+    public Matrix add(Matrix adder) {
+        Matrix temp = deepCopy();
+        temp.addInplace(adder);
         return temp;
+    }
+    
+    /**
+     * Subtract the matrix values from current matrix
+     * @param subtracter The matrix to be subtracted.
+     */
+    public void subtractInplace(Matrix subtracter) {
+        if (columnNumber != subtracter.getColumnCount() || rowNumber != subtracter.getRowCount()) {
+            throw new IllegalArgumentException("The dimension of input matrices does not match!");
+        }
+        
+        for (int row = 0; row < rowNumber; row++) {
+            for (int col = 0; col < columnNumber; col++) {
+                setElement(col, row, this.getElement(col, row) - subtracter.getElement(col, row));
+            }
+        }
     }
     
     /**
@@ -690,15 +743,8 @@ public class Matrix {
      * @return The given matrix subtracted by argument.
      */
     public Matrix subtract(Matrix subtracter) {
-        if (columnNumber != subtracter.getColumnCount() || rowNumber != subtracter.getRowCount()) {
-            throw new IllegalArgumentException("The dimension of input matrices does not match!");
-        }
-        Matrix temp = this.deepCopy();
-        for (int row = 0; row < rowNumber; row++) {
-            for (int col = 0; col < columnNumber; col++) {
-                temp.setElement(col, row, this.getElement(col, row) - subtracter.getElement(col, row));
-            }
-        }
+        Matrix temp = deepCopy();
+        temp.subtractInplace(subtracter);
         return temp;
     }
     
@@ -750,7 +796,7 @@ public class Matrix {
     }
     
     /**
-     * Convert the matrix to the WolframAlpha compatible format
+     * Convert the matrix to the WolframAlpha(R) compatible format
      * @param decimalPlacePrecision The rounding of decimal place to given position
      * @return WolframAlpha string representation of the matrix.
      */
@@ -804,6 +850,14 @@ public class Matrix {
     }
     
     /**
+     * Return the shape of the matrix in form (row count, column count)
+     * @return the shape of the matrix in form (row count, column count)
+     */
+    public int [] shape() {
+        return getDimension();
+    }
+    
+    /**
      * Get the number of rows in the matrix
      * @return Number of rows in the matrix
      */
@@ -834,7 +888,7 @@ public class Matrix {
     }
     
     /**
-     * Find the upper triangular form of the matrix (usable not only for determinant computation)
+     * Find the upper triangular form of the matrix (usable not only for determinant computation).
      */
     public void getUpperTriangularInplace() {
         // Follow the logic of the reduced Gaussian Elimination with swapping
@@ -892,11 +946,8 @@ public class Matrix {
      * @return The trace of the matrix
      */
     public double trace() {
-        if (rowNumber != columnNumber) {
-            throw new IllegalArgumentException("The matrix must be rectangular!");
-        }
-        double trace = 0;
-        for (int i = 0; i < rowNumber; i++) {
+        double trace = 0.0;
+        for (int i = 0; i < Math.min(getColumnCount(), getRowCount()); i++) {
             trace += getElement(i, i);
         }
         return trace;
@@ -908,10 +959,10 @@ public class Matrix {
      */
     public double determinant() {
         if (rowNumber != columnNumber) {
-            return 0;
+            return 0.0;
         }
         Matrix detTemp = getUpperTriangular();
-        double determinant = 1;
+        double determinant = 1.0;
         for (int i =0; i < columnNumber; i ++) {
             determinant *= detTemp.getElement(i, i);
         }
@@ -981,6 +1032,242 @@ public class Matrix {
         return nullspace;
     }
     
+    /**
+     * Add given constant to each element in matrix.
+     * @param scalar Given constant
+     */
+    public void addScalarToEachElementInplace(double scalar) {
+        for (int i = 0; i < matrix.length; ++i) {
+            matrix[i] = matrix[i] + scalar;
+        }
+    }
+    
+    /**
+     * Add given constant to each element in matrix.
+     * @param scalar Given constant
+     * @return New matrix after operation.
+     */
+    public Matrix addScalarToEachElement(double scalar) {
+        Matrix temp = deepCopy();
+        temp.addScalarToEachElementInplace(scalar);
+        return temp;
+    }
+    
+    /**
+     * Subtract given constant to each element in matrix.
+     * @param scalar Given constant
+     */
+    public void subtractScalarToEachElementInplace(double scalar) {
+        for (int i = 0; i < matrix.length; ++i) {
+            matrix[i] = matrix[i] - scalar;
+        }
+    }
+    
+    /**
+     * Subtract given constant to each element in matrix.
+     * @param scalar Given constant
+     * @return New matrix after operation.
+     */
+    public Matrix subtractScalarToEachElement(double scalar) {
+        Matrix temp = deepCopy();
+        temp.subtractScalarToEachElementInplace(scalar);
+        return temp;
+    }
+    
+    
+    /**
+     * Multiply each element in matrix by given scalar.
+     * @param scalar Given constant
+     */
+    public void multiplyScalarToEachElementInplace(double scalar) {
+        for (int i = 0; i < matrix.length; ++i) {
+            matrix[i] = matrix[i] * scalar;
+        }
+    }
+    
+    /**
+     * Multiply each element in matrix by given scalar.
+     * @param scalar Given constant
+     * @return New matrix after operation.
+     */
+    public Matrix multiplyScalarToEachElement(double scalar) {
+        Matrix temp = deepCopy();
+        temp.multiplyScalarToEachElementInplace(scalar);
+        return temp;
+    }
+    
+    /**
+     * Divide each element in matrix by given scalar.
+     * @param scalar Given constant
+     */
+    public void divideScalarToEachElementInplace(double scalar) throws IllegalArgumentException {
+        if (deltaDoubleCompare(scalar, 0.0, DELTA_FOR_COMPARE)) {
+            throw new IllegalArgumentException("Given scalar constant must not be equal to zero!");
+        }
+        for (int i = 0; i < matrix.length; ++i) {
+            matrix[i] = matrix[i] * scalar;
+        }
+    }
+    
+    /**
+     * Divide each element in matrix by given scalar.
+     * @param scalar Given constant
+     * @return New matrix after operation.
+     */
+    public Matrix divideScalarToEachElement(double scalar) throws IllegalArgumentException {
+        Matrix temp = deepCopy();
+        temp.multiplyScalarToEachElementInplace(scalar);
+        return temp;
+    }
+    
+    /**
+     * Compute the Hadamard product (also known as the Schur product or the entrywise product) - multiply each element in matrix by corresponding element in given matrix.
+     * @param m Matrix of the same size use in Hadamard product computation.
+     */
+    public void hadamardProductInpace(Matrix m) throws IllegalArgumentException {
+        if (m.getRowCount() != getRowCount() || m.getColumnCount() != getColumnCount()) {
+            throw new IllegalArgumentException("The shape (number of rows and columns) of both matrices has to be same.");
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            this.matrix[i] = this.matrix[i] * m.matrix[i];
+        }
+    }
+    
+    /**
+     * Compute the Hadamard product (also known as the Schur product or the entrywise product) - multiply each element in matrix by corresponding element in given matrix.
+     * @param m Matrix of the same size use in Hadamard product computation.
+     * @return Hadamard product of two matrices.
+     */
+    public Matrix hadamardProduct(Matrix m) throws IllegalArgumentException {
+        Matrix temp = deepCopy();
+        temp.hadamardProductInpace(m);
+        return temp;
+    }
+    
+    /**
+     * Divide each element in matrix by corresponding element in input matrix.
+     * @param m Input matrix
+     * @throws ArithmeticException if division by zero occurs
+     */
+    public void entrywiseDivisionInplace(Matrix m) throws IllegalArgumentException, ArithmeticException {
+        if (m.getRowCount() != getRowCount() || m.getColumnCount() != getColumnCount()) {
+            throw new IllegalArgumentException("The shape (number of rows and columns) of both matrices has to be same.");
+        }
+        for (int i = 0; i < matrix.length; i++) {
+            this.matrix[i] = this.matrix[i] / m.matrix[i];
+        }
+    }
+    
+    /**
+     * Divide each element in matrix by corresponding element in input matrix.
+     * @param m Input matrix
+     * @throws ArithmeticException if division by zero occurs
+     * @return The new matrix after computation.
+     */
+    public Matrix entrywiseDivision(Matrix m) throws IllegalArgumentException, ArithmeticException {
+        Matrix temp = deepCopy();
+        temp.entrywiseDivisionInplace(m);
+        return temp;
+    }
+    
+    /**
+     * Compute the power of each element to given scalar
+     * @param scalar Given exponent
+     */
+    public void powerToScalarInplace(double scalar) {
+        for (int i = 0; i < matrix.length; i++) {
+            this.matrix[i] = Math.pow(this.matrix[i], scalar);
+        }
+    }
+    
+    /**
+     * Compute the power of each element to given scalar
+     * @param scalar Given exponent
+     * @return New matrix after computation.
+     */
+    public Matrix powerToScalar(double scalar) {
+        Matrix temp = deepCopy();
+        temp.powerToScalarInplace(scalar);
+        return temp;
+    }
+    
+    /**
+     * Return the mean of selected columns as a double array.
+     * @param columnIndices The list of columns for computation of mean.
+     * @return The array of mean values of elements in chosen columns.
+     */
+    public double [] meanOnColumnSpace(int [] columnIndices) {
+        double average [] = new double[columnIndices.length];
+        for (int i = 0; i < columnIndices.length; i++) {
+            average[i] = meanOnColumnSpace(columnIndices[i]);
+        }
+        return average;
+    }
+    
+    /**
+     * Return the mean of selected columns as a double array.
+     * @param columnIndex The column for computation of mean.
+     * @return The mean values of elements in chosen column.
+     */
+    public double meanOnColumnSpace(int columnIndex) {
+        double sum = 0.0;
+        for(int row = 0; row < getRowCount(); ++row) {
+            sum += getElement(columnIndex, row);
+        }
+        return sum / ((double) getRowCount());
+    }
+    
+    /**
+     * Return the mean of all columns as a double array.
+     * @return The array of mean values of elements in all columns.
+     */
+    public double [] meanOnColumnSpace() {
+        double average [] = new double[getColumnCount()];
+        for (int i = 0; i < average.length; i++) {
+            average[i] = meanOnColumnSpace(i);
+        }
+        return average;
+    }
+    
+    /**
+     * Return the mean of selected rows as a double array.
+     * @param rowIndices The list of rows for computation of mean.
+     * @return The array of mean values of elements in chosen rows.
+     */
+    public double [] meanOnRowSpace(int [] rowIndices) {
+        double average [] = new double[rowIndices.length];
+        for (int i = 0; i < rowIndices.length; i++) {
+            average[i] = meanOnRowSpace(rowIndices[i]);
+        }
+        return average;
+    }
+    
+    /**
+     * Return the mean of selected rows as a double array.
+     * @param rowIndex The row for computation of mean.
+     * @return The mean values of elements in chosen row.
+     */
+    public double meanOnRowSpace(int rowIndex) {
+        double sum = 0.0;
+        for(int column = 0; column < getRowCount(); ++column) {
+            sum += getElement(column, rowIndex);
+        }
+        return sum / ((double) getColumnCount());
+    }
+    
+    /**
+     * Return the mean of all rows as a double array.
+     * @return The array of mean values of elements in all rows.
+     */
+    public double [] meanOnRowSpace() {
+        double average [] = new double[getRowCount()];
+        for (int i = 0; i < average.length; i++) {
+            average[i] = meanOnRowSpace(i);
+        }
+        return average;
+    }
+    
+    
     public Matrix parseMatlabString(String input) {
         throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
@@ -988,14 +1275,4 @@ public class Matrix {
         throw new java.lang.UnsupportedOperationException("Not supported yet.");
     }
     
-    
-    public double [] eigenvalues() {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
-    public Matrix [] eigenvectors() {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
-    public void rotateInplace(double angleInRadians) {
-        throw new java.lang.UnsupportedOperationException("Not supported yet.");
-    }
 }
