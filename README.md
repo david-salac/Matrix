@@ -1,6 +1,8 @@
 # Class encapsulating simple real matrices and fundamental matrix operations
 This is the basic implementation of the fundamental matrix operations.
 
+The motivation for this repository is to have a small replacement for Python's NumPy library in Java or C#.
+
 Available in Java in OpenJDK compatible and in C# in Mono compatible format.
 
 # Overview of available operations (with examples)
