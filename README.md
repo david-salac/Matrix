@@ -1,9 +1,7 @@
 # Class encapsulating simple real matrices and fundamental matrix operations
-This is the basic implementation of the fundamental matrix operations.
+Author: David Salac <http://www.github.com/david-salac>
 
-The motivation for this repository is to have a small replacement for Python's NumPy library in Java or C#.
-
-Available in Java in OpenJDK compatible and in C# in Mono compatible format.
+This is the basic implementation of fundamental matrix operations fastly working for smaller matrices. The motivation for this repository is to have a small replacement for Python's NumPy library in Java or C#. Available in Java in OpenJDK compatible and in C# in Mono compatible format.
 
 # Overview of available operations (with examples)
 The overall logic is that indices of rows or columns are *indexed from zero* (0). 
